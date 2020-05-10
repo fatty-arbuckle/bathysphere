@@ -1,4 +1,4 @@
-defmodule GameState do
+defmodule Bathysphere.Game.State do
 
   defstruct [
     map: [],

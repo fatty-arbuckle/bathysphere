@@ -9,17 +9,17 @@ defmodule Bathysphere.Game do
     GenServer.call(__MODULE__, :state)
   end
 
-  def up do
-    GenServer.cast(__MODULE__, :up)
+  def up(n) do
+    GenServer.cast(__MODULE__, {:up, n})
   end
 
-  def down do
-    GenServer.cast(__MODULE__, :down)
+  def down(n) do
+    GenServer.cast(__MODULE__, {:down, n})
   end
 
   def init({spaces, oxygen, stress, damage}) do
     { :ok,
-      %GameState{
+      %Bathysphere.Game.State{
         map: spaces,
         oxygen: oxygen,
         stress: stress,
@@ -32,11 +32,11 @@ defmodule Bathysphere.Game do
     {:reply, state, state}
   end
 
-  def handle_cast(:up, state) do
+  def handle_cast({:up, _n}, state) do
     {:noreply, %{ state | position: move(-1, state.map, state.position)}}
   end
 
-  def handle_cast(:down, state) do
+  def handle_cast({:down, _n}, state) do
     {:noreply, %{ state | position: move(+1, state.map, state.position)}}
   end
 
