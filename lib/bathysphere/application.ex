@@ -16,10 +16,20 @@ defmodule Bathysphere.Application do
 
   def start(_type, _args) do
     children = [
-      {Bathysphere.Game, @spaces}
+      { Bathysphere.Game,
+        {
+          @spaces,
+          make(:oxygen, 4),
+          make(:stress, 6),
+          make(:damage, 3),
+        }
+      }
     ]
 
     opts = [strategy: :one_for_one, name: Bathysphere.Supervisor]
     Supervisor.start_link(children, opts)
   end
+
+  defp make(token, n), do: Enum.map(0..n, fn _ -> {token, false} end)
+
 end

@@ -5,12 +5,8 @@ defmodule Bathysphere.Game do
     GenServer.start_link(__MODULE__, spaces, name: __MODULE__)
   end
 
-  def map do
-    GenServer.call(__MODULE__, :map)
-  end
-
-  def position do
-    GenServer.call(__MODULE__, :position)
+  def state do
+    GenServer.call(__MODULE__, :state)
   end
 
   def up do
@@ -21,32 +17,31 @@ defmodule Bathysphere.Game do
     GenServer.cast(__MODULE__, :down)
   end
 
-  def init(spaces) do
-    {
-      :ok,
-      %{
+  def init({spaces, oxygen, stress, damage}) do
+    { :ok,
+      %GameState{
         map: spaces,
-        position: 0
+        oxygen: oxygen,
+        stress: stress,
+        damage: damage
       }
     }
   end
 
-  def handle_call(:map, _from, %{map: map} = state) do
-    {:reply, map, state}
+  def handle_call(:state, _from, state) do
+    {:reply, state, state}
   end
 
-  def handle_call(:position, _from, %{position: position} = state) do
-    {:reply, position, state}
+  def handle_cast(:up, state) do
+    {:noreply, %{ state | position: move(-1, state.map, state.position)}}
   end
 
-  def handle_cast(:up, %{map: map, position: position} = state) do
-    position = update_position(-1, map, position)
-    {:noreply, %{ state | position: position}}
+  def handle_cast(:down, state) do
+    {:noreply, %{ state | position: move(+1, state.map, state.position)}}
   end
 
-  def handle_cast(:down, %{map: map, position: position} = state) do
-    position = update_position(+1, map, position)
-    {:noreply, %{ state | position: position}}
+  defp move(inc, map, position) do
+    update_position(inc, map, position)
   end
 
   defp update_position(inc, map, position) do
@@ -61,6 +56,5 @@ defmodule Bathysphere.Game do
 
   defp test_position(nil, :depth_zone), do: false
   defp test_position({type, _}, :depth_zone), do: type == :depth_zone
-
 
 end

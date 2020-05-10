@@ -1,13 +1,44 @@
 defmodule Bathysphere.Display.Terminal do
 
-  def display(spaces, pos) do
-    spaces
+  def display(game_state) do
+
+    IO.puts "Score: #{game_state.score}\n"
+
+    IO.puts display_oxygen(game_state.oxygen)
+    IO.puts display_stress(game_state.stress)
+    IO.puts display_damage(game_state.damage)
+    IO.puts ""
+
+    game_state.map
     |> Enum.with_index
     |> Enum.each(fn {space, index} ->
-      display_space(space, index, pos)
+      display_space(space, index, game_state.position)
       |> IO.puts
     end)
   end
+
+  defp display_oxygen(resources) do
+    "Oxygen: " <>
+    display_resource(resources)
+  end
+  defp display_stress(resources) do
+    "Stress: " <>
+    display_resource(resources)
+  end
+  defp display_damage(resources) do
+    "Damage: " <>
+    display_resource(resources)
+  end
+
+  defp display_resource([]), do: ""
+  defp display_resource([{_token, true} | resources]), do: "-X- " <> display_resource(resources)
+  defp display_resource([{token, false} | resources]), do: display_token(token) <> display_resource(resources)
+
+  defp display_token(:oxygen), do: " O₂"
+  defp display_token(:stress), do: " S "
+  defp display_token(:damage), do: " D "
+
+
 
   defp display_space({:start, _ }, index, pos) do
     display_space_prefix(index, pos)
