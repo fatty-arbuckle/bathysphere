@@ -9,7 +9,7 @@ defmodule Bathysphere.Application do
     { :space, %{ actions: nil, marked?: false } },
     { :depth_zone, %{} },
     { :space, %{ actions: [{:discovery, :octopus}], marked?: false } },
-    { :space, %{ actions: [], marked?: true } },
+    { :space, %{ actions: [], marked?: false } },
     { :space, %{ actions: [{:damage, -1}], marked?: false } },
     { :space, %{ actions: [{:ocean_floor, +2}], marked?: false } }
   ]

@@ -32,29 +32,16 @@ defmodule Bathysphere.Game do
     {:reply, state, state}
   end
 
-  def handle_cast({:up, _n}, state) do
-    {:noreply, %{ state | position: move(-1, state.map, state.position)}}
+  def handle_cast({:up, n}, state) do
+    state = state
+    |> Bathysphere.Game.Mechanics.up(n)
+    {:noreply, state}
   end
 
-  def handle_cast({:down, _n}, state) do
-    {:noreply, %{ state | position: move(+1, state.map, state.position)}}
+  def handle_cast({:down, n}, state) do
+    state = state
+    |> Bathysphere.Game.Mechanics.down(n)
+    {:noreply, state}
   end
-
-  defp move(inc, map, position) do
-    update_position(inc, map, position)
-  end
-
-  defp update_position(inc, map, position) do
-    bottom = Enum.count(map)
-    position = if position + inc >= bottom or position + inc < 0, do: position, else: position + inc
-    if !test_position(Enum.at(map, position), :depth_zone) do
-      position
-    else
-      update_position(inc, map, position)
-    end
-  end
-
-  defp test_position(nil, :depth_zone), do: false
-  defp test_position({type, _}, :depth_zone), do: type == :depth_zone
 
 end
