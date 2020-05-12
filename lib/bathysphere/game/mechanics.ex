@@ -15,7 +15,15 @@ defmodule Bathysphere.Game.Mechanics do
     case update_position(inc, game_state) do
       {:out_of_bounds, position} ->
         # TODO apply penalty for out_of_bounds?
-        %{ game_state | position: position }
+        {:space, data} = Enum.at(game_state.map, position)
+        updated_space = {:space, %{ data | marked?: true }}
+        updated_map = List.replace_at(game_state.map, position, updated_space)
+        %{ game_state |
+          map: updated_map,
+          position: position,
+          remaining: 0,
+          stress: mark_resource(:stress, game_state.stress, remaining)
+        }
       {:ok, new_position} ->
         game_state = %{ game_state |
           position: new_position ,
@@ -44,6 +52,7 @@ defmodule Bathysphere.Game.Mechanics do
   end
 
   defp evaluate_space({:depth_zone, _}, inc, %{ remaining: remaining } = game_state) do
+    game_state = %{ game_state | stress: mark_resource(:stress, game_state.stress, abs(remaining + 1)) }
     # TODO special handling for depth_zone as bottom or top
     game_state = %{ game_state | remaining: remaining + 1 }
     move(inc, game_state)

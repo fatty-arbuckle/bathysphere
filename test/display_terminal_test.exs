@@ -10,7 +10,7 @@ defmodule DisplayTerminalTest do
       <> "\n"
       <> " ↕️ |  Start / End   |\n"
       <> "   |     -1 O₂      |\n"
-      <> "   |  -1 O₂ / -2 S  |\n"
+      <> "   |   - O₂ / - S   |\n"
       <> "   |                |\n"
       <> "   ◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆◆\n"
       <> "   |    Octopus     |\n"
@@ -21,14 +21,14 @@ defmodule DisplayTerminalTest do
     game_state = %Bathysphere.Game.State{
       map: [
         { :start, %{} },
-        { :space, %{ actions: [{:oxygen, -1}], marked?: false } },
-        { :space, %{ actions: [{:oxygen, -1}, {:stress, -2}], marked?: false } },
+        { :space, %{ actions: [{:oxygen, -1, false}], marked?: false } },
+        { :space, %{ actions: [{:oxygen, -1, true}, {:stress, -2, true}], marked?: false } },
         { :space, %{ actions: nil, marked?: false } },
         { :depth_zone, %{} },
-        { :space, %{ actions: [{:discovery, :octopus}], marked?: false } },
+        { :space, %{ actions: [{:discovery, :octopus, nil}], marked?: false } },
         { :space, %{ actions: [], marked?: true } },
-        { :space, %{ actions: [{:damage, -1}], marked?: false } },
-        { :space, %{ actions: [{:ocean_floor, +2}], marked?: false } }
+        { :space, %{ actions: [{:damage, -1, false}], marked?: false } },
+        { :space, %{ actions: [{:ocean_floor, +2, false}], marked?: false } }
       ],
       position: 0,
       remaining: 0,

@@ -114,64 +114,70 @@ defmodule MechanicsTest do
         { :space, %{ actions: [{:stress, -1, false}], marked?: true } },
         { :space, %{ actions: [], marked?: true } },
       ],
-      position: 5,
-      oxygen: [{:oxygen, false},{:oxygen, false}],
-      stress: [{:stress, false},{:stress, false}],
-      damage: [{:damage, false},{:damage, false}]
+      position: 5
     }
     assert expected_state == Bathysphere.Game.Mechanics.down(game_state, 5)
   end
 
   test "moving down past depth_zone" do
-
+    game_state = %{ @base_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :depth_zone, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+      ]
+    }
+    expected_state = %{ game_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :depth_zone, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: true } },
+        { :space, %{ actions: [], marked?: false } },
+      ],
+      position: 4,
+      stress: [{:stress, true},{:stress, true}]
+    }
+    assert expected_state == Bathysphere.Game.Mechanics.down(game_state, 3)
   end
 
   test "moving down past the bottom" do
-
+    game_state = %{ @base_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+      ]
+    }
+    expected_state = %{ game_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: true } },
+      ],
+      position: 2,
+      stress: [{:stress, true},{:stress, false}]
+    }
+    assert expected_state == Bathysphere.Game.Mechanics.down(game_state, 3)
   end
 
-  test "moving up onto empty space" do
-
-  end
-
-  test "moving up and discovering an octopus" do
-
-  end
-
-  test "moving up and discovering an fish" do
-
-  end
-
-  test "moving up past actions" do
-
-  end
-
-  test "moving up past marked spaces" do
-    
-  end
-
-  test "moving up past depth_zone" do
-
-  end
-
-  test "moving up past the top" do
-
+  test "getting points for discoveries" do
   end
 
   test "moving back over a space with actions a second time" do
-
   end
 
   test "running out of stress" do
-
   end
 
   test "running out of damage" do
-
   end
 
   test "running out of oxygen" do
-
   end
 
 end
