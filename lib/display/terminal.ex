@@ -75,21 +75,23 @@ defmodule Bathysphere.Display.Terminal do
   defp display_position(_, _), do: " "
 
   defp display_actions(nil), do: []
-  defp display_actions([{:stress, value} | tail]),
-    do: ["#{display_action_value(value)} S"] ++ display_actions(tail)
-  defp display_actions([{:oxygen, value} | tail]),
-    do: ["#{display_action_value(value)} O₂"] ++ display_actions(tail)
-  defp display_actions([{:damage, value} | tail]),
-    do: ["#{display_action_value(value)} D"] ++ display_actions(tail)
-  defp display_actions([{:ocean_floor, value} | tail]),
-    do: ["#{display_action_value(value)} Floor"] ++ display_actions(tail)
-  defp display_actions([{:discovery, animal} | tail]),
+  defp display_actions([{:stress, value, used?} | tail]),
+    do: ["#{display_action_value(value, used?)} S"] ++ display_actions(tail)
+  defp display_actions([{:oxygen, value, used?} | tail]),
+    do: ["#{display_action_value(value, used?)} O₂"] ++ display_actions(tail)
+  defp display_actions([{:damage, value, used?} | tail]),
+    do: ["#{display_action_value(value, used?)} D"] ++ display_actions(tail)
+  defp display_actions([{:ocean_floor, value, used?} | tail]),
+    do: ["#{display_action_value(value, used?)} Floor"] ++ display_actions(tail)
+  defp display_actions([{:discovery, animal, _} | tail]),
     do: ["#{display_discovery(animal)}"] ++ display_actions(tail)
   defp display_actions([]),
     do: []
 
-  defp display_action_value(value) when value > 0, do: "+#{value}"
-  defp display_action_value(value), do: "#{value}"
+  defp display_action_value(value, false) when value > 0, do: "+#{value}"
+  defp display_action_value(value, true) when value > 0, do: "-"
+  defp display_action_value(value, false), do: "#{value}"
+  defp display_action_value(_value, true), do: "-"
 
   defp display_discovery(:octopus), do: "Octopus"
   defp display_discovery(:fish), do: "Fish"
