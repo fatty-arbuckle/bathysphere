@@ -119,16 +119,14 @@ defmodule Bathysphere.Game.Mechanics do
 
   defp evaluate_game(game_state) do
     game_state
-    |> evaluate_stress
-    |> evaluate_damage
-    # out of oxygen?
-    # out of stress?
-    # out of damage?
+    |> evaluate_resource(:stress)
+    |> evaluate_resource(:damage)
+    |> evaluate_resource(:oxygen)
     # TODO trigger actions based on state, like fewer dice or damage from stress
   end
 
-  defp evaluate_stress(game_state) do
-    case Enum.any?(game_state.stress, fn {_, used?} -> !used? end) do
+  defp evaluate_resource(game_state, resource) do
+    case Enum.any?(get_resource(game_state, resource), fn {_, used?} -> !used? end) do
       false ->
         %{ game_state | state: :dead }
       true ->
@@ -136,13 +134,8 @@ defmodule Bathysphere.Game.Mechanics do
     end
   end
 
-  defp evaluate_damage(game_state) do
-    case Enum.any?(game_state.damage, fn {_, used?} -> !used? end) do
-      false ->
-        %{ game_state | state: :dead }
-      true ->
-        game_state
-    end
-  end
+  defp get_resource(game_state, :stress), do: game_state.stress
+  defp get_resource(game_state, :damage), do: game_state.damage
+  defp get_resource(game_state, :oxygen), do: game_state.oxygen
 
 end

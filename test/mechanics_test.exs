@@ -296,6 +296,26 @@ defmodule MechanicsTest do
   end
 
   test "running out of oxygen" do
+    game_state = %{ @base_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [{:oxygen, -2, false}], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+      ]
+    }
+    expected_state = %{ game_state |
+    state: :dead,
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [{:oxygen, -2, true}], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: true } },
+      ],
+      position: 3,
+      oxygen: [{:oxygen, true},{:oxygen, true}]
+    }
+    assert {:dead, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 3)
   end
 
   test "getting points for discoveries" do
