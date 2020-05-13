@@ -3,6 +3,7 @@ defmodule MechanicsTest do
 
   @base_state %Bathysphere.Game.State{
     map: [],
+    state: :ready,
     position: 0,
     remaining: 0,
     score: 0,
@@ -198,6 +199,7 @@ defmodule MechanicsTest do
       position: 5
     }
     expected_state = %{ game_state |
+      state: :complete,
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -1, true}], marked?: false } },
@@ -210,15 +212,31 @@ defmodule MechanicsTest do
       stress: [{:stress, true},{:stress, false}],
       oxygen: [{:oxygen, true},{:oxygen, false}],
       damage: [{:damage, false},{:damage, false}]
-
     }
     assert expected_state == Bathysphere.Game.Mechanics.up(game_state, 5)
   end
 
-  test "getting points for discoveries" do
-  end
-
-  test "moving back over a space with actions a second time" do
+  test "completing the game" do
+    game_state = %{ @base_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: true } }
+      ],
+      position: 3
+    }
+    expected_state = %{ game_state |
+      state: :complete,
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: true } }
+      ],
+      position: 0
+    }
+    assert expected_state == Bathysphere.Game.Mechanics.up(game_state, 3)
   end
 
   test "running out of stress" do
@@ -229,5 +247,12 @@ defmodule MechanicsTest do
 
   test "running out of oxygen" do
   end
+
+  test "getting points for discoveries" do
+  end
+
+  test "moving back over a space with actions a second time" do
+  end
+
 
 end

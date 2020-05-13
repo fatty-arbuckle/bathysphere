@@ -1,10 +1,14 @@
 defmodule Bathysphere.Game.Mechanics do
 
-  def up(game_state, n) do
+  def up(%{state: :dead}, _n), do: {:error, :game_over}
+  def up(%{state: :comlete}, _n), do: {:error, :game_over}
+  def up(%{state: :ready} = game_state, n) do
     move(-1, %{ game_state | remaining: n })
   end
 
-  def down(game_state, n) do
+  def down(%{state: :dead}, _n), do: {:error, :game_over}
+  def down(%{state: :comlete}, _n), do: {:error, :game_over}
+  def down(%{state: :ready} = game_state, n) do
     move(+1, %{ game_state | remaining: n })
   end
 
@@ -103,8 +107,7 @@ defmodule Bathysphere.Game.Mechanics do
   end
   # passing by / landing on start (which is the finish)
   defp evaluate_space({:start, _}, _inc, game_state) do
-    # TODO end game scenario
-    game_state
+    %{ game_state | state: :complete }
   end
 
   defp mark_resource(_type, resources, 0), do: resources
