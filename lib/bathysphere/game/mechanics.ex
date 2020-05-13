@@ -1,16 +1,16 @@
 defmodule Bathysphere.Game.Mechanics do
 
-  def up(%{state: :dead}, _n), do: {:error, :game_over}
-  def up(%{state: :comlete}, _n), do: {:error, :game_over}
-  def up(%{state: :ready} = game_state, n) do
-    move(-1, %{ game_state | remaining: n })
+  def up(%{state: :ok} = game_state, n) do
+    updated = move(-1, %{ game_state | remaining: n })
+    {updated.state, updated}
   end
+  def up(%{state: state} = game_state, _n), do: {state, game_state}
 
-  def down(%{state: :dead}, _n), do: {:error, :game_over}
-  def down(%{state: :comlete}, _n), do: {:error, :game_over}
-  def down(%{state: :ready} = game_state, n) do
-    move(+1, %{ game_state | remaining: n })
+  def down(%{state: :ok} = game_state, n) do
+    updated = move(+1, %{ game_state | remaining: n })
+    {updated.state, updated}
   end
+  def down(%{state: state} = game_state, _n), do: {state, game_state}
 
   defp move(_inc, %{ remaining: 0 } = game_state) do
     game_state
@@ -53,6 +53,7 @@ defmodule Bathysphere.Game.Mechanics do
       inc,
       game_state
     )
+    |> evaluate_game
   end
 
   defp evaluate_space({:depth_zone, _}, inc, %{ remaining: remaining } = game_state) do
@@ -114,6 +115,24 @@ defmodule Bathysphere.Game.Mechanics do
   defp mark_resource(type, resources, data) do
     resources = [{type, true}] ++ Enum.drop(resources, -1)
     mark_resource(type, resources, data - 1)
+  end
+
+  defp evaluate_game(game_state) do
+    game_state
+    |> evaluate_stress
+    # out of oxygen?
+    # out of stress?
+    # out of damage?
+    # TODO trigger actions based on state, like fewer dice or damage from stress
+  end
+
+  defp evaluate_stress(game_state) do
+    case Enum.any?(game_state.stress, fn {_, used?} -> !used? end) do
+      false ->
+        %{ game_state | state: :dead }
+      true ->
+        game_state
+    end
   end
 
 end
