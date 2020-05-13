@@ -98,6 +98,7 @@ defmodule MechanicsTest do
       ]
     }
     expected_state = %{ game_state |
+      state: :dead,
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -1, true}], marked?: false } },
@@ -112,7 +113,7 @@ defmodule MechanicsTest do
       stress: [{:stress, true},{:stress, true}],
       damage: [{:damage, true},{:damage, true}]
     }
-    assert {:ok, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 6)
+    assert {:dead, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 6)
   end
 
   test "moving down past marked spaces" do
@@ -152,6 +153,7 @@ defmodule MechanicsTest do
       ]
     }
     expected_state = %{ game_state |
+      state: :dead,
       map: [
         { :start, %{} },
         { :space, %{ actions: [], marked?: false } },
@@ -163,7 +165,7 @@ defmodule MechanicsTest do
       position: 4,
       stress: [{:stress, true},{:stress, true}]
     }
-    assert {:ok, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 3)
+    assert {:dead, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 3)
   end
 
   test "moving down past the bottom" do
@@ -213,7 +215,7 @@ defmodule MechanicsTest do
       oxygen: [{:oxygen, true},{:oxygen, false}],
       damage: [{:damage, false},{:damage, false}]
     }
-    assert {:ok, expected_state} == Bathysphere.Game.Mechanics.up(game_state, 5)
+    assert {:complete, expected_state} == Bathysphere.Game.Mechanics.up(game_state, 5)
   end
 
   test "completing the game" do
@@ -269,6 +271,28 @@ defmodule MechanicsTest do
   end
 
   test "running out of damage" do
+    game_state = %{ @base_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [{:damage, -1, false}], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [{:damage, -1, false}], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+      ]
+    }
+    expected_state = %{ game_state |
+    state: :dead,
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [{:damage, -1, true}], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [{:damage, -1, true}], marked?: false } },
+        { :space, %{ actions: [], marked?: true } },
+      ],
+      position: 4,
+      damage: [{:damage, true},{:damage, true}]
+    }
+    assert {:dead, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 4)
   end
 
   test "running out of oxygen" do
@@ -280,5 +304,10 @@ defmodule MechanicsTest do
   test "moving back over a space with actions a second time" do
   end
 
+  test "triggering damage from stress" do
+  end
+
+  test "losing dice from oxygen" do
+  end
 
 end

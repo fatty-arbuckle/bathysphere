@@ -120,6 +120,7 @@ defmodule Bathysphere.Game.Mechanics do
   defp evaluate_game(game_state) do
     game_state
     |> evaluate_stress
+    |> evaluate_damage
     # out of oxygen?
     # out of stress?
     # out of damage?
@@ -128,6 +129,15 @@ defmodule Bathysphere.Game.Mechanics do
 
   defp evaluate_stress(game_state) do
     case Enum.any?(game_state.stress, fn {_, used?} -> !used? end) do
+      false ->
+        %{ game_state | state: :dead }
+      true ->
+        game_state
+    end
+  end
+
+  defp evaluate_damage(game_state) do
+    case Enum.any?(game_state.damage, fn {_, used?} -> !used? end) do
       false ->
         %{ game_state | state: :dead }
       true ->
