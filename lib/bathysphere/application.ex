@@ -2,6 +2,7 @@ defmodule Bathysphere.Application do
 
   use Application
 
+  # spaces are {type, data, used?}
   @spaces [
     { :start, %{} },
     { :space, %{ actions: [{:oxygen, -1, false}], marked?: false } },

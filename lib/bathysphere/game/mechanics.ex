@@ -59,8 +59,7 @@ defmodule Bathysphere.Game.Mechanics do
   end
   # landing on a marked space
   defp evaluate_space({:space, %{marked?: true}}, _inc, %{ remaining: 0 } = game_state) do
-    # TODO apply stress reduction
-    game_state
+    %{ game_state | stress: mark_resource(:stress, game_state.stress, 1) }
   end
   # passing over a marked space
   defp evaluate_space({:space, %{marked?: true}}, _inc, game_state) do
@@ -93,6 +92,7 @@ defmodule Bathysphere.Game.Mechanics do
           :stress -> %{ acc | stress: mark_resource(:stress, acc.stress, abs(data)) }
           :damage -> %{ acc | damage: mark_resource(:damage, acc.damage, abs(data)) }
           :oxygen -> %{ acc | oxygen: mark_resource(:oxygen, acc.oxygen, abs(data)) }
+          _ -> acc
         end
         updated_actions = List.replace_at(actions, idx, {type, data, true})
         updated_space = {:space, %{ space_data | actions: updated_actions }}

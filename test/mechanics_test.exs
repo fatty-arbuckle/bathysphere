@@ -30,6 +30,24 @@ defmodule MechanicsTest do
     assert expected_state == Bathysphere.Game.Mechanics.down(game_state, 1)
   end
 
+  test "moving down onto a marked space" do
+    game_state = %{ @base_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [{:stress, -1, false}], marked?: true } },
+      ]
+    }
+    expected_state = %{ game_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [{:stress, -1, false}], marked?: true } },
+      ],
+      position: 1,
+      stress: [{:stress, true},{:stress, false}]
+    }
+    assert expected_state == Bathysphere.Game.Mechanics.down(game_state, 1)
+  end
+
   test "moving down and discovering an octopus" do
     game_state = %{ @base_state |
       map: [
@@ -74,6 +92,7 @@ defmodule MechanicsTest do
         { :space, %{ actions: [{:stress, -1, false}], marked?: false } },
         { :space, %{ actions: [{:damage, -2, false}], marked?: false } },
         { :space, %{ actions: [{:stress, -1, false}], marked?: false } },
+        { :space, %{ actions: [{:discovery, :fish, false}], marked?: false } },
         { :space, %{ actions: [], marked?: false } },
       ]
     }
@@ -84,14 +103,15 @@ defmodule MechanicsTest do
         { :space, %{ actions: [{:stress, -1, true}], marked?: false } },
         { :space, %{ actions: [{:damage, -2, true}], marked?: false } },
         { :space, %{ actions: [{:stress, -1, true}], marked?: false } },
+        { :space, %{ actions: [{:discovery, :fish, true}], marked?: false } },
         { :space, %{ actions: [], marked?: true } },
       ],
-      position: 5,
+      position: 6,
       oxygen: [{:oxygen, true},{:oxygen, false}],
       stress: [{:stress, true},{:stress, true}],
       damage: [{:damage, true},{:damage, true}]
     }
-    assert expected_state == Bathysphere.Game.Mechanics.down(game_state, 5)
+    assert expected_state == Bathysphere.Game.Mechanics.down(game_state, 6)
   end
 
   test "moving down past marked spaces" do
@@ -163,6 +183,36 @@ defmodule MechanicsTest do
       stress: [{:stress, true},{:stress, false}]
     }
     assert expected_state == Bathysphere.Game.Mechanics.down(game_state, 3)
+  end
+
+  test "moving up" do
+    game_state = %{ @base_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [{:oxygen, -1, false}], marked?: false } },
+        { :space, %{ actions: [{:stress, -1, true}], marked?: false } },
+        { :space, %{ actions: [{:damage, -2, true}], marked?: false } },
+        { :space, %{ actions: [{:stress, -1, false}], marked?: false } },
+        { :space, %{ actions: [], marked?: true } }
+      ],
+      position: 5
+    }
+    expected_state = %{ game_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [{:oxygen, -1, true}], marked?: false } },
+        { :space, %{ actions: [{:stress, -1, true}], marked?: false } },
+        { :space, %{ actions: [{:damage, -2, true}], marked?: false } },
+        { :space, %{ actions: [{:stress, -1, true}], marked?: false } },
+        { :space, %{ actions: [], marked?: true } }
+      ],
+      position: 0,
+      stress: [{:stress, true},{:stress, false}],
+      oxygen: [{:oxygen, true},{:oxygen, false}],
+      damage: [{:damage, false},{:damage, false}]
+
+    }
+    assert expected_state == Bathysphere.Game.Mechanics.up(game_state, 5)
   end
 
   test "getting points for discoveries" do
