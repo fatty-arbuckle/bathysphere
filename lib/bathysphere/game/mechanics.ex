@@ -71,19 +71,11 @@ defmodule Bathysphere.Game.Mechanics do
     game_state
   end
   # landing on an unmarked space
-  defp evaluate_space({:space, %{actions: actions} = data}, _inc, %{ remaining: 0, fish_discovered: fish, octopus_discovered: octopus  } = game_state) do
-    fish = Enum.reduce(actions, fish, fn {action, type, _used?}, acc ->
-      if action == :discovery and type == :fish, do: acc + 1, else: acc
-    end)
-    octopus = Enum.reduce(actions, octopus, fn {action, type, _used?}, acc ->
-      if action == :discovery and type == :octopus, do: acc + 1, else: acc
-    end)
+  defp evaluate_space({:space, %{actions: actions} = data}, _inc, %{ remaining: 0 } = game_state) do
     updated_space = {:space, %{ data | marked?: true }}
     updated_map = List.replace_at(game_state.map, game_state.position, updated_space)
     %{ game_state |
-      map: updated_map,
-      fish_discovered: fish,
-      octopus_discovered: octopus
+      map: updated_map
     }
   end
   # passing over an unmarked space
@@ -122,6 +114,7 @@ defmodule Bathysphere.Game.Mechanics do
     |> evaluate_resource(:stress)
     |> evaluate_resource(:damage)
     |> evaluate_resource(:oxygen)
+    |> evaluate_points
     # TODO trigger actions based on state, like fewer dice or damage from stress
   end
 
@@ -138,4 +131,40 @@ defmodule Bathysphere.Game.Mechanics do
   defp get_resource(game_state, :damage), do: game_state.damage
   defp get_resource(game_state, :oxygen), do: game_state.oxygen
 
+  defp evaluate_points(game_state) do
+    {fish, octopus, points} = Enum.reduce(game_state.map, {0, 0, 0}, fn {space_type, data}, {fish, octopus, points} ->
+      case space_type do
+        :space ->
+          case data.marked? do
+            true ->
+              f = Enum.filter(data.actions, fn {type, value, _used} ->
+                type == :discovery and value == :fish
+              end)
+              |> Enum.count
+              o = Enum.filter(data.actions, fn {type, value, _used} ->
+                type == :discovery and value == :octopus
+              end)
+              |> Enum.count
+              p = Enum.reduce(data.actions, 0, fn {type, value, _used}, acc ->
+                if type == :ocean_floor, do: acc + value, else: acc
+              end)
+              {fish + f, octopus + o, points + p}
+            _ ->
+              {fish, octopus, points}
+          end
+        _ ->
+          {fish, octopus, points}
+      end
+    end)
+
+    # {fish, octopus, points}
+    score = [
+      Enum.take(game_state.fish_points, fish) |> Enum.sum(),
+      Enum.take(game_state.octopus_points, octopus) |> Enum.sum(),
+      points
+    ]
+    |> Enum.sum
+
+    %{ game_state | score: score }
+  end
 end

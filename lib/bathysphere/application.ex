@@ -19,6 +19,10 @@ defmodule Bathysphere.Application do
   @stress Enum.map(0..6, fn _ -> {:stress, false} end)
   @damage Enum.map(0..3, fn _ -> {:damage, false} end)
 
+  @fish_points [+2, +2, +3, +4, +5]
+  @octopus_points [+3, +3, +4, +4, +5]
+
+
   def start(_type, _args) do
     children = [
       { Bathysphere.Game,
@@ -27,6 +31,8 @@ defmodule Bathysphere.Application do
           @oxygen,
           @stress,
           @damage,
+          @fish_points,
+          @octopus_points,
         }
       }
     ]

@@ -11,7 +11,9 @@ defmodule MechanicsTest do
     octopus_discovered: 0,
     oxygen: [{:oxygen, false},{:oxygen, false}],
     stress: [{:stress, false},{:stress, false}],
-    damage: [{:damage, false},{:damage, false}]
+    damage: [{:damage, false},{:damage, false}],
+    fish_points: [+2, +2, +3],
+    octopus_points: [+3, +5]
   }
 
   test "moving down onto empty space" do
@@ -62,7 +64,7 @@ defmodule MechanicsTest do
         { :space, %{ actions: [{:discovery, :octopus, nil}], marked?: true } },
       ],
       position: 1,
-      octopus_discovered: 1,
+      score: 3
     }
     assert {:ok, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 1)
   end
@@ -80,7 +82,7 @@ defmodule MechanicsTest do
         { :space, %{ actions: [{:discovery, :fish, nil}], marked?: true } },
       ],
       position: 1,
-      fish_discovered: 1,
+      score: 2
     }
     assert {:ok, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 1)
   end
@@ -319,6 +321,34 @@ defmodule MechanicsTest do
   end
 
   test "getting points for discoveries" do
+    game_state = %{ @base_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [{:discovery, :fish, nil}], marked?: false } },
+        { :space, %{ actions: [{:discovery, :octopus, nil}], marked?: false } },
+        { :space, %{ actions: [{:discovery, :fish, nil}], marked?: false } },
+        { :space, %{ actions: [{:discovery, :octopus, nil}], marked?: false } },
+        { :space, %{ actions: [{:ocean_floor, +2, nil}], marked?: false } },
+        { :space, %{ actions: [{:ocean_floor, +4, nil}], marked?: false } }
+      ]
+    }
+    expected_state = %{ game_state |
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [{:discovery, :fish, nil}], marked?: true } },
+        { :space, %{ actions: [{:discovery, :octopus, nil}], marked?: true } },
+        { :space, %{ actions: [{:discovery, :fish, nil}], marked?: true } },
+        { :space, %{ actions: [{:discovery, :octopus, nil}], marked?: true } },
+        { :space, %{ actions: [{:ocean_floor, +2, nil}], marked?: true } },
+        { :space, %{ actions: [{:ocean_floor, +4, nil}], marked?: true } }
+      ],
+      position: 6,
+      score: 18
+    }
+    assert expected_state == Enum.reduce(0..5, game_state, fn _, acc ->
+      {:ok, updated} = Bathysphere.Game.Mechanics.down(acc, 1)
+      updated
+    end)
   end
 
   test "moving back over a space with actions a second time" do

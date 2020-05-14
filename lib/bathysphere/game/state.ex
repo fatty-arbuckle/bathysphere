@@ -10,7 +10,9 @@ defmodule Bathysphere.Game.State do
     octopus_discovered: 0,
     stress: [],
     damage: [],
-    oxygen: []
+    oxygen: [],
+    fish_points: [],
+    octopus_points: []
   ]
 
 end

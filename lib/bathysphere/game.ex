@@ -17,13 +17,15 @@ defmodule Bathysphere.Game do
     GenServer.cast(__MODULE__, {:down, n})
   end
 
-  def init({spaces, oxygen, stress, damage}) do
+  def init({spaces, oxygen, stress, damage, fish_points, octopus_points}) do
     { :ok,
       %Bathysphere.Game.State{
         map: spaces,
         oxygen: oxygen,
         stress: stress,
-        damage: damage
+        damage: damage,
+        fish_points: fish_points,
+        octopus_points: octopus_points
       }
     }
   end
