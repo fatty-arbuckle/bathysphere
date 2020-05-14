@@ -7,8 +7,6 @@ defmodule MechanicsTest do
     position: 0,
     remaining: 0,
     score: 0,
-    fish_discovered: 0,
-    octopus_discovered: 0,
     oxygen: [{:oxygen, false},{:oxygen, false}],
     stress: [{:stress, false},{:stress, false}],
     damage: [{:damage, false},{:damage, false}],
