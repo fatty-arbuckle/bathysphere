@@ -5,6 +5,10 @@ defmodule Bathysphere.Game do
     GenServer.start_link(__MODULE__, spaces, name: __MODULE__)
   end
 
+  def reset(%Bathysphere.Game.State{} = initial_state) do
+    GenServer.call(__MODULE__, {:reset, initial_state})
+  end
+
   def state do
     GenServer.call(__MODULE__, :state)
   end
@@ -17,20 +21,19 @@ defmodule Bathysphere.Game do
     GenServer.cast(__MODULE__, {:down, n})
   end
 
-  def init({spaces, oxygen, stress, damage, fish_points, octopus_points}) do
+  def init(_opt) do
     { :ok,
       {
         :ok,
         %Bathysphere.Game.State{
-          map: spaces,
-          oxygen: oxygen,
-          stress: stress,
-          damage: damage,
-          fish_points: fish_points,
-          octopus_points: octopus_points
+          state: :no_map
         }
       }
     }
+  end
+
+  def handle_call({:reset, state}, _from, _old_state) do
+    {:reply, :ok, {state.state, state}}
   end
 
   def handle_call(:state, _from, state) do

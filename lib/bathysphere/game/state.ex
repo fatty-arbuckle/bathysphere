@@ -1,7 +1,7 @@
 defmodule Bathysphere.Game.State do
 
   defstruct [
-    state: :ok, # :complete, :dead,
+    state: :ok, # :no_map, :complete, :dead,
     map: [],
     position: 0,
     remaining: 0,
