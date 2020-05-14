@@ -349,6 +349,17 @@ defmodule MechanicsTest do
     end)
   end
 
+  test "dice pool selection and refresh" do
+    # test dice pool is populated correctly based on game config (dice_pool_size)
+    # movement only by dice selection
+    # can't move with no dice
+    # rerolling dice pool costs an oxygen
+  end
+
+
+  test "select action when passing a space with multiple actions" do
+  end
+
   test "moving back over a space with actions a second time" do
   end
 
