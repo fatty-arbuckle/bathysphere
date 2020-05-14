@@ -1,6 +1,12 @@
 defmodule Bathysphere.Display.Terminal do
 
-  def display(game_state) do
+  def display({state, game_state}) do
+
+    case state do
+      :dead     -> IO.puts "Game Over: you died!\n"
+      :complete -> IO.puts "Game Over: you WON!\n"
+      _ -> nil
+    end
 
     IO.puts "Score: #{game_state.score}\n"
 

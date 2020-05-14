@@ -19,13 +19,16 @@ defmodule Bathysphere.Game do
 
   def init({spaces, oxygen, stress, damage, fish_points, octopus_points}) do
     { :ok,
-      %Bathysphere.Game.State{
-        map: spaces,
-        oxygen: oxygen,
-        stress: stress,
-        damage: damage,
-        fish_points: fish_points,
-        octopus_points: octopus_points
+      {
+        :ok,
+        %Bathysphere.Game.State{
+          map: spaces,
+          oxygen: oxygen,
+          stress: stress,
+          damage: damage,
+          fish_points: fish_points,
+          octopus_points: octopus_points
+        }
       }
     }
   end
@@ -34,16 +37,12 @@ defmodule Bathysphere.Game do
     {:reply, state, state}
   end
 
-  def handle_cast({:up, n}, state) do
-    state = state
-    |> Bathysphere.Game.Mechanics.up(n)
-    {:noreply, state}
+  def handle_cast({:up, n}, {_state, game_state}) do
+    {:noreply, Bathysphere.Game.Mechanics.up(game_state, n)}
   end
 
-  def handle_cast({:down, n}, state) do
-    state = state
-    |> Bathysphere.Game.Mechanics.down(n)
-    {:noreply, state}
+  def handle_cast({:down, n}, {_state, game_state}) do
+    {:noreply, Bathysphere.Game.Mechanics.down(game_state, n)}
   end
 
 end

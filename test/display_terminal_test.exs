@@ -40,7 +40,7 @@ defmodule DisplayTerminalTest do
 
     assert expected ==
       ExUnit.CaptureIO.capture_io(fn ->
-        Bathysphere.Display.Terminal.display(game_state)
+        Bathysphere.Display.Terminal.display({game_state.state, game_state})
       end)
   end
 end
