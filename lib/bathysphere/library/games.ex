@@ -2,6 +2,7 @@ defmodule Bathysphere.Library.Games do
 
   @games %{
     "0c" => %Bathysphere.Game.State{
+      dice_pool_size: 5,
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:discovery, :fish, false}], marked?: false } },

@@ -10,21 +10,30 @@ defmodule Bathysphere.Game.Mechanics do
     }
   end
 
-  defp roll_dice(n) do
-    Enum.map(0..(n-1), fn _ -> :rand.uniform(6) end)
-  end
-
-  def up(%{state: :ok} = game_state, n) do
-    updated = move(-1, %{ game_state | remaining: n })
-    {updated.state, updated}
+  def up(%{state: :ok, dice_pool: dice_pool} = game_state, n) do
+    if Enum.member?(dice_pool, n) do
+      updated = move(-1, %{ game_state | remaining: n })
+      {updated.state, %{ updated | dice_pool: List.delete(dice_pool, n)}}
+    else
+      {:invalid_move, game_state}
+    end
   end
   def up(%{state: state} = game_state, _n), do: {state, game_state}
 
-  def down(%{state: :ok} = game_state, n) do
-    updated = move(+1, %{ game_state | remaining: n })
-    {updated.state, updated}
+  def down(%{state: :ok, dice_pool: dice_pool} = game_state, n) do
+    if Enum.member?(dice_pool, n) do
+      updated = move(+1, %{ game_state | remaining: n })
+      {updated.state, %{ updated | dice_pool: List.delete(dice_pool, n)}}
+    else
+      {:invalid_move, game_state}
+    end
   end
   def down(%{state: state} = game_state, _n), do: {state, game_state}
+
+
+  defp roll_dice(n) do
+    Enum.map(0..(n-1), fn _ -> :rand.uniform(6) end)
+  end
 
   defp move(_inc, %{ remaining: 0 } = game_state) do
     game_state

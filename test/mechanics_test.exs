@@ -2,7 +2,7 @@ defmodule MechanicsTest do
   use ExUnit.Case
 
   @base_state %Bathysphere.Game.State{
-    dice_pool_size: 5,
+    dice_pool_size: 1,
     dice_pool: [],
     map: [],
     state: :ok,
@@ -18,12 +18,14 @@ defmodule MechanicsTest do
 
   test "moving down onto empty space" do
     game_state = %{ @base_state |
+      dice_pool: [1],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:stress, -1, false}], marked?: false } },
       ]
     }
     expected_state = %{ game_state |
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:stress, -1, false}], marked?: true } },
@@ -35,13 +37,15 @@ defmodule MechanicsTest do
 
   test "moving down onto a marked space" do
     game_state = %{ @base_state |
+      dice_pool: [1],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:stress, -1, false}], marked?: true } },
       ]
     }
     expected_state = %{ game_state |
-      map: [
+    dice_pool: [],
+    map: [
         { :start, %{} },
         { :space, %{ actions: [{:stress, -1, false}], marked?: true } },
       ],
@@ -53,12 +57,14 @@ defmodule MechanicsTest do
 
   test "moving down and discovering an octopus" do
     game_state = %{ @base_state |
+      dice_pool: [1],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:discovery, :octopus, nil}], marked?: false } },
       ]
     }
     expected_state = %{ game_state |
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:discovery, :octopus, nil}], marked?: true } },
@@ -71,12 +77,14 @@ defmodule MechanicsTest do
 
   test "moving down and discovering an fish" do
     game_state = %{ @base_state |
+      dice_pool: [1],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:discovery, :fish, nil}], marked?: false } },
       ]
     }
     expected_state = %{ game_state |
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:discovery, :fish, nil}], marked?: true } },
@@ -89,6 +97,7 @@ defmodule MechanicsTest do
 
   test "moving down past actions" do
     game_state = %{ @base_state |
+      dice_pool: [6],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -1, false}], marked?: false } },
@@ -101,6 +110,7 @@ defmodule MechanicsTest do
     }
     expected_state = %{ game_state |
       state: :dead,
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -1, true}], marked?: false } },
@@ -120,6 +130,7 @@ defmodule MechanicsTest do
 
   test "moving down past marked spaces" do
     game_state = %{ @base_state |
+      dice_pool: [5],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -1, false}], marked?: true } },
@@ -130,6 +141,7 @@ defmodule MechanicsTest do
       ]
     }
     expected_state = %{ game_state |
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -1, false}], marked?: true } },
@@ -145,6 +157,7 @@ defmodule MechanicsTest do
 
   test "moving down past depth_zone" do
     game_state = %{ @base_state |
+      dice_pool: [3],
       map: [
         { :start, %{} },
         { :space, %{ actions: [], marked?: false } },
@@ -156,6 +169,7 @@ defmodule MechanicsTest do
     }
     expected_state = %{ game_state |
       state: :dead,
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [], marked?: false } },
@@ -172,6 +186,7 @@ defmodule MechanicsTest do
 
   test "moving down past the bottom" do
     game_state = %{ @base_state |
+      dice_pool: [3],
       map: [
         { :start, %{} },
         { :space, %{ actions: [], marked?: false } },
@@ -179,6 +194,7 @@ defmodule MechanicsTest do
       ]
     }
     expected_state = %{ game_state |
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [], marked?: false } },
@@ -192,6 +208,7 @@ defmodule MechanicsTest do
 
   test "moving up" do
     game_state = %{ @base_state |
+      dice_pool: [5],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -1, false}], marked?: false } },
@@ -204,6 +221,7 @@ defmodule MechanicsTest do
     }
     expected_state = %{ game_state |
       state: :complete,
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -1, true}], marked?: false } },
@@ -222,6 +240,7 @@ defmodule MechanicsTest do
 
   test "completing the game" do
     game_state = %{ @base_state |
+      dice_pool: [ 3 ],
       map: [
         { :start, %{} },
         { :space, %{ actions: [], marked?: false } },
@@ -232,6 +251,7 @@ defmodule MechanicsTest do
     }
     expected_state = %{ game_state |
       state: :complete,
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [], marked?: false } },
@@ -247,6 +267,7 @@ defmodule MechanicsTest do
 
   test "running out of stress" do
     game_state = %{ @base_state |
+      dice_pool: [3],
       map: [
         { :start, %{} },
         { :depth_zone, %{} },
@@ -257,7 +278,8 @@ defmodule MechanicsTest do
       ]
     }
     expected_state = %{ game_state |
-    state: :dead,
+      state: :dead,
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :depth_zone, %{} },
@@ -274,6 +296,7 @@ defmodule MechanicsTest do
 
   test "running out of damage" do
     game_state = %{ @base_state |
+      dice_pool: [4],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:damage, -1, false}], marked?: false } },
@@ -283,7 +306,8 @@ defmodule MechanicsTest do
       ]
     }
     expected_state = %{ game_state |
-    state: :dead,
+      state: :dead,
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:damage, -1, true}], marked?: false } },
@@ -299,6 +323,7 @@ defmodule MechanicsTest do
 
   test "running out of oxygen" do
     game_state = %{ @base_state |
+      dice_pool: [3],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -2, false}], marked?: false } },
@@ -307,7 +332,8 @@ defmodule MechanicsTest do
       ]
     }
     expected_state = %{ game_state |
-    state: :dead,
+      state: :dead,
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -2, true}], marked?: false } },
@@ -322,6 +348,7 @@ defmodule MechanicsTest do
 
   test "getting points for discoveries" do
     game_state = %{ @base_state |
+      dice_pool: [ 1, 1, 1, 1, 1, 1 ],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:discovery, :fish, nil}], marked?: false } },
@@ -333,6 +360,7 @@ defmodule MechanicsTest do
       ]
     }
     expected_state = %{ game_state |
+      dice_pool: [],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:discovery, :fish, nil}], marked?: true } },
@@ -349,6 +377,55 @@ defmodule MechanicsTest do
       {:ok, updated} = Bathysphere.Game.Mechanics.down(acc, 1)
       updated
     end)
+  end
+
+  test "moving N removes an N die from the dice pool" do
+    game_state = %{ @base_state |
+      dice_pool_size: 3,
+      dice_pool: [ 1, 2, 6, 1, 1 ],
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+      ]
+    }
+    expected_state = %{ game_state |
+      dice_pool_size: 3,
+      dice_pool: [ 6, 1 ],
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: true } },
+        { :space, %{ actions: [], marked?: true } },
+        { :space, %{ actions: [], marked?: true } },
+        { :space, %{ actions: [], marked?: false } },
+      ],
+      position: 4
+    }
+    final_state = Bathysphere.Game.Mechanics.down(game_state, 2)
+    |> elem(1)
+    |> Bathysphere.Game.Mechanics.down(1)
+    |> elem(1)
+    |> Bathysphere.Game.Mechanics.down(1)
+
+    assert {:ok, expected_state} == final_state
+
+  end
+
+  test "cannot move N without N die in the dice pool" do
+    game_state = %{ @base_state |
+      dice_pool_size: 3,
+      dice_pool: [1, 3, 6]
+    }
+    expected_state = %{ game_state |
+      dice_pool_size: 3,
+      dice_pool: [1, 3, 6]
+    }
+    assert { :invalid_move, expected_state } == Bathysphere.Game.Mechanics.down(game_state, 2)
+    assert { :invalid_move, expected_state } == Bathysphere.Game.Mechanics.up(game_state, 4)
   end
 
   test "initial population of the dice pool" do
@@ -374,13 +451,6 @@ defmodule MechanicsTest do
     assert game_state.dice_pool != updated_state.dice_pool
     assert [{:oxygen, true},{:oxygen, false}] = updated_state.oxygen
   end
-
-  test "dice pool selection and refresh" do
-    # movement only by die selection
-    # can't move with no dice
-    # rerolling dice pool costs an oxygen
-  end
-
 
   test "select action when passing a space with multiple actions" do
   end
