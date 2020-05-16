@@ -9,6 +9,7 @@ defmodule Bathysphere.Game.Mechanics do
       dice_pool: roll_dice(game_state.dice_pool_size),
       oxygen: mark_resource(:oxygen, game_state.oxygen, 1)
     }
+    |> evaluate_game
     { new_state.state, new_state }
   end
 
@@ -96,7 +97,7 @@ defmodule Bathysphere.Game.Mechanics do
     game_state
   end
   # landing on an unmarked space
-  defp evaluate_space({:space, %{actions: actions} = data}, _inc, %{ remaining: 0 } = game_state) do
+  defp evaluate_space({:space, %{actions: _actions} = data}, _inc, %{ remaining: 0 } = game_state) do
     updated_space = {:space, %{ data | marked?: true }}
     updated_map = List.replace_at(game_state.map, game_state.position, updated_space)
     %{ game_state |

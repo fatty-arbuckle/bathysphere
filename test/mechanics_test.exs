@@ -452,6 +452,22 @@ defmodule MechanicsTest do
     assert [{:oxygen, true},{:oxygen, false}] = updated_state.oxygen
   end
 
+  test "rerolling the dice can kill you" do
+    game_state = %{ @base_state |
+      dice_pool_size: 3,
+      dice_pool: [ 1, 5, 2 ],
+      oxygen: [{:oxygen, true},{:oxygen, false}]
+    }
+    expected_state = %{ game_state |
+      state: :dead,
+      dice_pool_size: 3,
+      dice_pool: [ 1, 5, 2 ],
+      oxygen: [{:oxygen, true},{:oxygen, true}]
+    }
+    { final_state, updated_state } = Bathysphere.Game.Mechanics.roll(game_state)
+    assert {:dead, expected_state} == { final_state, %{ updated_state | dice_pool: [ 1, 5, 2 ] } }
+  end
+
   test "select action when passing a space with multiple actions" do
   end
 
