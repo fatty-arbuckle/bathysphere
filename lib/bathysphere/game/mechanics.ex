@@ -1,5 +1,19 @@
 defmodule Bathysphere.Game.Mechanics do
 
+  def roll(game_state, :init) do
+    %{ game_state | dice_pool: roll_dice(game_state.dice_pool_size) }
+  end
+  def roll(game_state) do
+    %{ game_state |
+      dice_pool: roll_dice(game_state.dice_pool_size),
+      oxygen: mark_resource(:oxygen, game_state.oxygen, 1)
+    }
+  end
+
+  defp roll_dice(n) do
+    Enum.map(0..(n-1), fn _ -> :rand.uniform(6) end)
+  end
+
   def up(%{state: :ok} = game_state, n) do
     updated = move(-1, %{ game_state | remaining: n })
     {updated.state, updated}

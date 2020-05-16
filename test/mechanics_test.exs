@@ -2,6 +2,8 @@ defmodule MechanicsTest do
   use ExUnit.Case
 
   @base_state %Bathysphere.Game.State{
+    dice_pool_size: 5,
+    dice_pool: [],
     map: [],
     state: :ok,
     position: 0,
@@ -349,9 +351,32 @@ defmodule MechanicsTest do
     end)
   end
 
+  test "initial population of the dice pool" do
+    game_state = %{ @base_state |
+      dice_pool_size: 3,
+      dice_pool: []
+    }
+    updated_state = Bathysphere.Game.Mechanics.roll(game_state, :init)
+    assert game_state.dice_pool_size == Enum.count(updated_state.dice_pool)
+    Enum.each(updated_state.dice_pool, fn die ->
+      assert die <= 6 and die >= 1
+    end)
+  end
+
+  test "re-population of the dice pool" do
+    game_state = %{ @base_state |
+      dice_pool_size: 3,
+      dice_pool: [ 7, 8, 9 ],
+      oxygen: [{:oxygen, false},{:oxygen, false}]
+    }
+    updated_state = Bathysphere.Game.Mechanics.roll(game_state)
+    assert game_state.dice_pool_size == Enum.count(updated_state.dice_pool)
+    assert game_state.dice_pool != updated_state.dice_pool
+    assert [{:oxygen, true},{:oxygen, false}] = updated_state.oxygen
+  end
+
   test "dice pool selection and refresh" do
-    # test dice pool is populated correctly based on game config (dice_pool_size)
-    # movement only by dice selection
+    # movement only by die selection
     # can't move with no dice
     # rerolling dice pool costs an oxygen
   end

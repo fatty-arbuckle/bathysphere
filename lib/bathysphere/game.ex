@@ -5,6 +5,7 @@ defmodule Bathysphere.Game do
     GenServer.start_link(__MODULE__, spaces, name: __MODULE__)
   end
 
+  # Resets the current game, and loads a new GameState
   def reset(%Bathysphere.Game.State{} = initial_state) do
     GenServer.call(__MODULE__, {:reset, initial_state})
   end
@@ -33,7 +34,8 @@ defmodule Bathysphere.Game do
   end
 
   def handle_call({:reset, state}, _from, _old_state) do
-    {:reply, :ok, {state.state, state}}
+    game_state = Bathysphere.Game.Mechanics.roll(state, :init)
+    {:reply, :ok, {game_state.state, game_state}}
   end
 
   def handle_call(:state, _from, state) do
