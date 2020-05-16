@@ -1,13 +1,15 @@
 defmodule Bathysphere.Game.Mechanics do
 
   def roll(game_state, :init) do
-    %{ game_state | dice_pool: roll_dice(game_state.dice_pool_size) }
+    new_state = %{ game_state | dice_pool: roll_dice(game_state.dice_pool_size) }
+    { new_state.state, new_state }
   end
   def roll(game_state) do
-    %{ game_state |
+    new_state = %{ game_state |
       dice_pool: roll_dice(game_state.dice_pool_size),
       oxygen: mark_resource(:oxygen, game_state.oxygen, 1)
     }
+    { new_state.state, new_state }
   end
 
   def up(%{state: :ok, dice_pool: dice_pool} = game_state, n) do

@@ -18,4 +18,6 @@ defmodule Bathysphere do
 
   def down(n), do: Bathysphere.Game.down(n)
 
+  def reroll(), do: Bathysphere.Game.reroll()
+
 end

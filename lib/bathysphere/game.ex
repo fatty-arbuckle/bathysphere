@@ -15,11 +15,15 @@ defmodule Bathysphere.Game do
   end
 
   def up(n) do
-    GenServer.cast(__MODULE__, {:up, n})
+    GenServer.call(__MODULE__, {:up, n})
   end
 
   def down(n) do
-    GenServer.cast(__MODULE__, {:down, n})
+    GenServer.call(__MODULE__, {:down, n})
+  end
+
+  def reroll() do
+    GenServer.call(__MODULE__, :reroll)
   end
 
   def init(_opt) do
@@ -34,20 +38,27 @@ defmodule Bathysphere.Game do
   end
 
   def handle_call({:reset, state}, _from, _old_state) do
-    game_state = Bathysphere.Game.Mechanics.roll(state, :init)
-    {:reply, :ok, {game_state.state, game_state}}
+    { state, game_state } = Bathysphere.Game.Mechanics.roll(state, :init)
+    {:reply, state, { state, game_state } }
   end
 
   def handle_call(:state, _from, state) do
     {:reply, state, state}
   end
 
-  def handle_cast({:up, n}, {_state, game_state}) do
-    {:noreply, Bathysphere.Game.Mechanics.up(game_state, n)}
+  def handle_call({:up, n}, _from, {_state, game_state}) do
+    {reply, new_state} = Bathysphere.Game.Mechanics.up(game_state, n)
+    {:reply, reply, {reply, new_state}}
   end
 
-  def handle_cast({:down, n}, {_state, game_state}) do
-    {:noreply, Bathysphere.Game.Mechanics.down(game_state, n)}
+  def handle_call({:down, n}, _from, {_state, game_state}) do
+    {reply, new_state} = Bathysphere.Game.Mechanics.down(game_state, n)
+    {:reply, reply, {reply, new_state}}
+  end
+
+  def handle_call(:reroll, _from, {_state, game_state}) do
+    {reply, new_state} = Bathysphere.Game.Mechanics.roll(game_state)
+    {:reply, reply, {reply, new_state}}
   end
 
 end

@@ -433,7 +433,7 @@ defmodule MechanicsTest do
       dice_pool_size: 3,
       dice_pool: []
     }
-    updated_state = Bathysphere.Game.Mechanics.roll(game_state, :init)
+    {:ok, updated_state} = Bathysphere.Game.Mechanics.roll(game_state, :init)
     assert game_state.dice_pool_size == Enum.count(updated_state.dice_pool)
     Enum.each(updated_state.dice_pool, fn die ->
       assert die <= 6 and die >= 1
@@ -446,7 +446,7 @@ defmodule MechanicsTest do
       dice_pool: [ 7, 8, 9 ],
       oxygen: [{:oxygen, false},{:oxygen, false}]
     }
-    updated_state = Bathysphere.Game.Mechanics.roll(game_state)
+    { :ok, updated_state } = Bathysphere.Game.Mechanics.roll(game_state)
     assert game_state.dice_pool_size == Enum.count(updated_state.dice_pool)
     assert game_state.dice_pool != updated_state.dice_pool
     assert [{:oxygen, true},{:oxygen, false}] = updated_state.oxygen
