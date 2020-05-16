@@ -8,6 +8,8 @@ defmodule DisplayTerminalTest do
       <> "Stress: -X- -X-  S  S  S  S  S \n"
       <> "Damage: -X-  D  D  D \n"
       <> "\n"
+      <> "5 dice --> [ 3  5  1  -  - ]\n"
+      <> "\n"
       <> " ↕️ |  Start / End   |\n"
       <> "   |     -1 O₂      |\n"
       <> "   |   - O₂ / - S   |\n"
@@ -19,6 +21,8 @@ defmodule DisplayTerminalTest do
       <> "   |    +2 Floor    |\n"
 
     game_state = %Bathysphere.Game.State{
+      dice_pool_size: 5,
+      dice_pool: [ 3, 5, 1 ],
       map: [
         { :start, %{} },
         { :space, %{ actions: [{:oxygen, -1, false}], marked?: false } },

@@ -15,6 +15,9 @@ defmodule Bathysphere.Display.Terminal do
     IO.puts display_damage(game_state.damage)
     IO.puts ""
 
+    IO.puts display_dice_pool(game_state)
+    IO.puts ""
+
     game_state.map
     |> Enum.with_index
     |> Enum.each(fn {space, index} ->
@@ -22,6 +25,20 @@ defmodule Bathysphere.Display.Terminal do
       |> IO.puts
     end)
   end
+
+  defp display_dice_pool(%{dice_pool_size: size, dice_pool: pool}) do
+    Enum.reduce(
+      fill_pool(pool, Enum.count(pool), size),
+      "#{size} dice --> [",
+      fn x,acc -> acc <> " #{x} " end) <> "]"
+  end
+  
+  defp fill_pool(pool, n, limit) when n < limit do
+    updated = pool ++ ["-"]
+    fill_pool(updated, Enum.count(updated), limit)
+  end
+  defp fill_pool(pool, _n, _limit), do: pool
+
 
   defp display_oxygen(resources) do
     "Oxygen: " <>
