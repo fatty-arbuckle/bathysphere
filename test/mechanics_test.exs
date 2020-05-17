@@ -95,39 +95,6 @@ defmodule MechanicsTest do
     assert {:ok, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 1)
   end
 
-  test "moving down past actions" do
-    game_state = %{ @base_state |
-      dice_pool: [6],
-      map: [
-        { :start, %{} },
-        { :space, %{ actions: [{:oxygen, -1, false}], marked?: false } },
-        { :space, %{ actions: [{:stress, -1, false}], marked?: false } },
-        { :space, %{ actions: [{:damage, -2, false}], marked?: false } },
-        { :space, %{ actions: [{:stress, -1, false}], marked?: false } },
-        { :space, %{ actions: [{:discovery, :fish, false}], marked?: false } },
-        { :space, %{ actions: [], marked?: false } },
-      ]
-    }
-    expected_state = %{ game_state |
-      state: :dead,
-      dice_pool: [],
-      map: [
-        { :start, %{} },
-        { :space, %{ actions: [{:oxygen, -1, true}], marked?: false } },
-        { :space, %{ actions: [{:stress, -1, true}], marked?: false } },
-        { :space, %{ actions: [{:damage, -2, true}], marked?: false } },
-        { :space, %{ actions: [{:stress, -1, true}], marked?: false } },
-        { :space, %{ actions: [{:discovery, :fish, false}], marked?: false } },
-        { :space, %{ actions: [], marked?: true } },
-      ],
-      position: 6,
-      oxygen: [{:oxygen, true},{:oxygen, false}],
-      stress: [{:stress, true},{:stress, true}],
-      damage: [{:damage, true},{:damage, true}]
-    }
-    assert {:dead, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 6)
-  end
-
   test "moving down past marked spaces" do
     game_state = %{ @base_state |
       dice_pool: [5],
@@ -204,38 +171,6 @@ defmodule MechanicsTest do
       stress: [{:stress, true},{:stress, false}]
     }
     assert {:ok, expected_state} == Bathysphere.Game.Mechanics.down(game_state, 3)
-  end
-
-  test "moving up" do
-    game_state = %{ @base_state |
-      dice_pool: [5],
-      map: [
-        { :start, %{} },
-        { :space, %{ actions: [{:oxygen, -1, false}], marked?: false } },
-        { :space, %{ actions: [{:stress, -1, true}], marked?: false } },
-        { :space, %{ actions: [{:damage, -2, true}], marked?: false } },
-        { :space, %{ actions: [{:stress, -1, false}], marked?: false } },
-        { :space, %{ actions: [], marked?: true } }
-      ],
-      position: 5
-    }
-    expected_state = %{ game_state |
-      state: :complete,
-      dice_pool: [],
-      map: [
-        { :start, %{} },
-        { :space, %{ actions: [{:oxygen, -1, true}], marked?: false } },
-        { :space, %{ actions: [{:stress, -1, true}], marked?: false } },
-        { :space, %{ actions: [{:damage, -2, true}], marked?: false } },
-        { :space, %{ actions: [{:stress, -1, true}], marked?: false } },
-        { :space, %{ actions: [], marked?: true } }
-      ],
-      position: 0,
-      stress: [{:stress, true},{:stress, false}],
-      oxygen: [{:oxygen, true},{:oxygen, false}],
-      damage: [{:damage, false},{:damage, false}]
-    }
-    assert {:complete, expected_state} == Bathysphere.Game.Mechanics.up(game_state, 5)
   end
 
   test "completing the game" do
