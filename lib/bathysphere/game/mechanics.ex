@@ -105,28 +105,50 @@ defmodule Bathysphere.Game.Mechanics do
     }
   end
   # passing over an unmarked space
-  defp evaluate_space({:space, %{actions: actions} = space_data}, _inc, game_state) do
-    Enum.with_index(actions)
-    |> Enum.reduce(game_state, fn {{type, data, used?}, idx}, acc ->
-      if used? do
-        acc
-      else
-        acc = case type do
-          :stress -> %{ acc | stress: mark_resource(:stress, acc.stress, abs(data)) }
-          :damage -> %{ acc | damage: mark_resource(:damage, acc.damage, abs(data)) }
-          :oxygen -> %{ acc | oxygen: mark_resource(:oxygen, acc.oxygen, abs(data)) }
-          _ -> acc
-        end
-        updated_actions = List.replace_at(actions, idx, {type, data, true})
-        updated_space = {:space, %{ space_data | actions: updated_actions }}
-        updated_map = List.replace_at(acc.map, acc.position, updated_space)
-        %{ acc | map: updated_map }
-      end
+  defp evaluate_space({:space, %{actions: actions}}, _inc, game_state) do
+    actions_remaining = Enum.with_index(actions)
+    |> Enum.filter(fn {{type, _data, used?}, _idx} ->
+      !used? and Enum.member?([:stress, :damage, :oxygen], type)
     end)
+
+    # TODO let the user pick an action, for now pick the first in the list
+    apply_action(game_state, Enum.at(actions_remaining, 0))
+
+    # Enum.with_index(actions)
+    # |> Enum.reduce(game_state, fn {{type, data, used?}, idx}, acc ->
+    #   if used? do
+    #     acc
+    #   else
+    #     acc = case type do
+    #       :stress -> %{ acc | stress: mark_resource(:stress, acc.stress, abs(data)) }
+    #       :damage -> %{ acc | damage: mark_resource(:damage, acc.damage, abs(data)) }
+    #       :oxygen -> %{ acc | oxygen: mark_resource(:oxygen, acc.oxygen, abs(data)) }
+    #       _ -> acc
+    #     end
+    #     updated_actions = List.replace_at(actions, idx, {type, data, true})
+    #     updated_space = {:space, %{ space_data | actions: updated_actions }}
+    #     updated_map = List.replace_at(acc.map, acc.position, updated_space)
+    #     %{ acc | map: updated_map }
+    #   end
+    # end)
   end
   # passing by / landing on start (which is the finish)
   defp evaluate_space({:start, _}, _inc, game_state) do
     %{ game_state | state: :complete }
+  end
+
+  defp apply_action(game_state, nil), do: game_state
+  defp apply_action(game_state, {{type, data, false}, idx}) do
+    game_state = case type do
+      :stress -> %{ game_state | stress: mark_resource(:stress, game_state.stress, abs(data)) }
+      :damage -> %{ game_state | damage: mark_resource(:damage, game_state.damage, abs(data)) }
+      :oxygen -> %{ game_state | oxygen: mark_resource(:oxygen, game_state.oxygen, abs(data)) }
+    end
+    {:space, space_data} = Enum.at(game_state.map, game_state.position)
+    updated_actions = List.replace_at(space_data.actions, idx, {type, data, true})
+    updated_space = {:space, %{ space_data | actions: updated_actions }}
+    updated_map = List.replace_at(game_state.map, game_state.position, updated_space)
+    %{ game_state | map: updated_map }
   end
 
   defp mark_resource(_type, resources, 0), do: resources
