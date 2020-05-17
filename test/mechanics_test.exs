@@ -405,80 +405,89 @@ defmodule MechanicsTest do
     assert {:dead, expected_state} == { final_state, %{ updated_state | dice_pool: [ 1, 5, 2 ] } }
   end
 
-  # test "moving back over a space with actions a second time" do
-  #   game_state = %{ @base_state |
-  #     dice_pool: [ 5, 4, 5 ],
-  #     map: [
-  #       { :start, %{} },
-  #       { :space, %{ actions: [], marked?: false } },
-  #       { :space, %{ actions: [{:oxygen, -1, false}, {:stress, -1, false}], marked?: false } },
-  #       { :space, %{ actions: [{:stress, -1, false}, {:oxygen, -1, false}], marked?: false } },
-  #       { :space, %{ actions: [{:damage, -1, false}, {:stress, -1, false}], marked?: false } },
-  #       { :space, %{ actions: [], marked?: false } },
-  #       { :space, %{ actions: [], marked?: false } }
-  #     ],
-  #     position: 0,
-  #     stress: [{:stress, false},{:stress, false},{:stress, false},{:stress, false}],
-  #     oxygen: [{:oxygen, false},{:oxygen, false},{:oxygen, false},{:oxygen, false}],
-  #     damage: [{:damage, false},{:damage, false},{:damage, false},{:damage, false}]
-  #   }
-  #   first_state = %{ game_state |
-  #     state: :ok,
-  #     dice_pool: [ 4, 5 ],
-  #     map: [
-  #       { :start, %{} },
-  #       { :space, %{ actions: [], marked?: false } },
-  #       { :space, %{ actions: [{:oxygen, -1, true}, {:stress, -1, false}], marked?: false } },
-  #       { :space, %{ actions: [{:stress, -1, true}, {:oxygen, -1, false}], marked?: false } },
-  #       { :space, %{ actions: [{:damage, -1, true}, {:stress, -1, false}], marked?: false } },
-  #       { :space, %{ actions: [], marked?: true } },
-  #       { :space, %{ actions: [], marked?: false } }
-  #     ],
-  #     position: 5,
-  #     stress: [{:stress, true},{:stress, false},{:stress, false},{:stress, false}],
-  #     oxygen: [{:oxygen, true},{:oxygen, false},{:oxygen, false},{:oxygen, false}],
-  #     damage: [{:damage, true},{:damage, false},{:damage, false},{:damage, false}]
-  #   }
-  #   assert {:ok, first_state} == Bathysphere.Game.Mechanics.down(game_state, 5)
-  #
-  #   second_state = %{ first_state |
-  #     state: :ok,
-  #     dice_pool: [ 5 ],
-  #     map: [
-  #       { :start, %{} },
-  #       { :space, %{ actions: [], marked?: true } },
-  #       { :space, %{ actions: [{:oxygen, -1, true}, {:stress, -1, true}], marked?: false } },
-  #       { :space, %{ actions: [{:stress, -1, true}, {:oxygen, -1, true}], marked?: false } },
-  #       { :space, %{ actions: [{:damage, -1, true}, {:stress, -1, true}], marked?: false } },
-  #       { :space, %{ actions: [], marked?: true } },
-  #       { :space, %{ actions: [], marked?: false } }
-  #     ],
-  #     position: 1,
-  #     stress: [{:stress, true},{:stress, true},{:stress, true},{:stress, false}],
-  #     oxygen: [{:oxygen, true},{:oxygen, true},{:oxygen, false},{:oxygen, false}],
-  #     damage: [{:damage, true},{:damage, false},{:damage, false},{:damage, false}]
-  #   }
-  #   assert {:ok, second_state} == Bathysphere.Game.Mechanics.up(first_state, 4)
-  #
-  #   third_state = %{ second_state |
-  #     state: :ok,
-  #     dice_pool: [],
-  #     map: [
-  #       { :start, %{} },
-  #       { :space, %{ actions: [], marked?: true } },
-  #       { :space, %{ actions: [{:oxygen, -1, true}, {:stress, -1, true}], marked?: false } },
-  #       { :space, %{ actions: [{:stress, -1, true}, {:oxygen, -1, true}], marked?: false } },
-  #       { :space, %{ actions: [{:damage, -1, true}, {:stress, -1, true}], marked?: false } },
-  #       { :space, %{ actions: [], marked?: true } },
-  #       { :space, %{ actions: [], marked?: true } }
-  #     ],
-  #     position: 6,
-  #     stress: [{:stress, true},{:stress, true},{:stress, true},{:stress, false}],
-  #     oxygen: [{:oxygen, true},{:oxygen, true},{:oxygen, false},{:oxygen, false}],
-  #     damage: [{:damage, true},{:damage, false},{:damage, false},{:damage, false}]
-  #   }
-  #   assert {:ok, third_state} == Bathysphere.Game.Mechanics.down(second_state, 5)
-  # end
+  test "moving back over a space with actions a second time" do
+    game_state = %{ @base_state |
+      dice_pool: [ 5, 4, 5 ],
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [{:oxygen, -1, false}, {:stress, -1, false}], marked?: false } },
+        { :space, %{ actions: [{:stress, -1, false}, {:oxygen, -1, false}], marked?: false } },
+        { :space, %{ actions: [{:damage, -1, false}, {:stress, -1, false}], marked?: false } },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [], marked?: false } }
+      ],
+      position: 0,
+      stress: [{:stress, false},{:stress, false},{:stress, false},{:stress, false}],
+      oxygen: [{:oxygen, false},{:oxygen, false},{:oxygen, false},{:oxygen, false}],
+      damage: [{:damage, false},{:damage, false},{:damage, false},{:damage, false}]
+    }
+
+    first_state = %{ game_state |
+      state: :ok,
+      dice_pool: [ 4, 5 ],
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: false } },
+        { :space, %{ actions: [{:oxygen, -1, true}, {:stress, -1, false}], marked?: false } },
+        { :space, %{ actions: [{:stress, -1, true}, {:oxygen, -1, false}], marked?: false } },
+        { :space, %{ actions: [{:damage, -1, true}, {:stress, -1, false}], marked?: false } },
+        { :space, %{ actions: [], marked?: true } },
+        { :space, %{ actions: [], marked?: false } }
+      ],
+      position: 5,
+      direction: 1,
+      stress: [{:stress, true},{:stress, false},{:stress, false},{:stress, false}],
+      oxygen: [{:oxygen, true},{:oxygen, false},{:oxygen, false},{:oxygen, false}],
+      damage: [{:damage, true},{:damage, false},{:damage, false},{:damage, false}]
+    }
+    assert {:ok, first_state} == Bathysphere.Game.Mechanics.down(game_state, 5)
+      |> elem(1)
+      |> Bathysphere.Game.Mechanics.select_action({{:oxygen, -1, false}, 0})
+      |> elem(1)
+      |> Bathysphere.Game.Mechanics.select_action({{:stress, -1, false}, 0})
+      |> elem(1)
+      |> Bathysphere.Game.Mechanics.select_action({{:damage, -1, false}, 0})
+
+    second_state = %{ first_state |
+      state: :ok,
+      dice_pool: [ 5 ],
+      map: [
+        { :start, %{} },
+        { :space, %{ actions: [], marked?: true } },
+        { :space, %{ actions: [{:oxygen, -1, true}, {:stress, -1, true}], marked?: false } },
+        { :space, %{ actions: [{:stress, -1, true}, {:oxygen, -1, true}], marked?: false } },
+        { :space, %{ actions: [{:damage, -1, true}, {:stress, -1, true}], marked?: false } },
+        { :space, %{ actions: [], marked?: true } },
+        { :space, %{ actions: [], marked?: false } }
+      ],
+      position: 1,
+      direction: -1,
+      stress: [{:stress, true},{:stress, true},{:stress, true},{:stress, false}],
+      oxygen: [{:oxygen, true},{:oxygen, true},{:oxygen, false},{:oxygen, false}],
+      damage: [{:damage, true},{:damage, false},{:damage, false},{:damage, false}]
+    }
+    assert {:ok, second_state} == Bathysphere.Game.Mechanics.up(first_state, 4)
+
+    # third_state = %{ second_state |
+    #   state: :ok,
+    #   dice_pool: [],
+    #   map: [
+    #     { :start, %{} },
+    #     { :space, %{ actions: [], marked?: true } },
+    #     { :space, %{ actions: [{:oxygen, -1, true}, {:stress, -1, true}], marked?: false } },
+    #     { :space, %{ actions: [{:stress, -1, true}, {:oxygen, -1, true}], marked?: false } },
+    #     { :space, %{ actions: [{:damage, -1, true}, {:stress, -1, true}], marked?: false } },
+    #     { :space, %{ actions: [], marked?: true } },
+    #     { :space, %{ actions: [], marked?: true } }
+    #   ],
+    #   position: 6,
+    #   stress: [{:stress, true},{:stress, true},{:stress, true},{:stress, false}],
+    #   oxygen: [{:oxygen, true},{:oxygen, true},{:oxygen, false},{:oxygen, false}],
+    #   damage: [{:damage, true},{:damage, false},{:damage, false},{:damage, false}]
+    # }
+    # assert {:ok, third_state} == Bathysphere.Game.Mechanics.down(second_state, 5)
+  end
 
   test "select action when passing a space with multiple actions" do
     game_state = %{ @base_state |
