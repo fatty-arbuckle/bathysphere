@@ -5,6 +5,8 @@ defmodule Bathysphere.Display.Terminal do
     case state do
       :dead     -> IO.puts "Game Over: you died!\n"
       :complete -> IO.puts "Game Over: you WON!\n"
+      {:select_action, actions} ->
+        IO.puts "Make a selection: #{display_select_actions(actions)}\n"
       _ -> nil
     end
 
@@ -26,13 +28,19 @@ defmodule Bathysphere.Display.Terminal do
     end)
   end
 
+  defp display_select_actions(actions) do
+    Enum.reduce(actions, "", fn {{type, value, used?}, idx}, acc ->
+      acc <> "   {{#{type}, #{value}, #{used?}}, #{idx}}"
+    end)
+  end
+
   defp display_dice_pool(%{dice_pool_size: size, dice_pool: pool}) do
     Enum.reduce(
       fill_pool(pool, Enum.count(pool), size),
       "#{size} dice --> [",
       fn x,acc -> acc <> " #{x} " end) <> "]"
   end
-  
+
   defp fill_pool(pool, n, limit) when n < limit do
     updated = pool ++ ["-"]
     fill_pool(updated, Enum.count(updated), limit)

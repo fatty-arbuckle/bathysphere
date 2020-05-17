@@ -22,6 +22,10 @@ defmodule Bathysphere.Game do
     GenServer.call(__MODULE__, {:down, n})
   end
 
+  def select_action(action) do
+    GenServer.call(__MODULE__, {:select_action, action})
+  end
+
   def reroll() do
     GenServer.call(__MODULE__, :reroll)
   end
@@ -53,6 +57,11 @@ defmodule Bathysphere.Game do
 
   def handle_call({:down, n}, _from, {_state, game_state}) do
     {reply, new_state} = Bathysphere.Game.Mechanics.down(game_state, n)
+    {:reply, reply, {reply, new_state}}
+  end
+
+  def handle_call({:select_action, action}, _from, {_state, game_state}) do
+    {reply, new_state} = Bathysphere.Game.Mechanics.select_action(game_state, action)
     {:reply, reply, {reply, new_state}}
   end
 

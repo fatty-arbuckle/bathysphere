@@ -18,6 +18,8 @@ defmodule Bathysphere do
 
   def down(n), do: Bathysphere.Game.down(n)
 
+  def select_action(action), do: Bathysphere.Game.select_action(action)
+
   def reroll(), do: Bathysphere.Game.reroll()
 
 end

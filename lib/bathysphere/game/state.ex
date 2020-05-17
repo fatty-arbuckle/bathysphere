@@ -7,6 +7,7 @@ defmodule Bathysphere.Game.State do
     map: [],
     position: 0,
     remaining: 0,
+    direction: 0,
     score: 0,
     stress: [],
     damage: [],
